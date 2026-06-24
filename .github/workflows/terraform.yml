@@ -54,7 +54,7 @@ jobs:
               run: terraform init
 
             - name: Terraform format check
-              run: terraform fmt -checl --diff
+              run: terraform fmt -check --diff
 
             - name: Terraform Validate
               run: terraform validate
