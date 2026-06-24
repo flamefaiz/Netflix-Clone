@@ -21,11 +21,11 @@ resource "aws_iam_role" "role" {
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_managed_policy" {
-    role = aws_iam_role.role.name
-    policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  role       = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 resource "aws_iam_instance_profile" "iam_instance-profile" {
-      name = "${local.org}-${local.project}-${local.env}-instance-profile"
-      role = aws_iam_role.role.name
+  name = "${local.org}-${local.project}-${local.env}-instance-profile"
+  role = aws_iam_role.role.name
 }
