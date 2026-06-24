@@ -1,5 +1,5 @@
 locals {
-  org     = "faiz"
+  org     = "aman"
   project = "netflix-clone"
   env     = var.env
 }
@@ -11,7 +11,7 @@ resource "aws_vpc" "vpc" {
   enable_dns_support   = true
 
   tags = {
-    Name = "${local.org}=${local.project}-${local.env}-vpc"
+    Name = "${local.org}-${local.project}-${local.env}-vpc"
     Env  = "${local.env}"
   }
 }
@@ -20,7 +20,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "${local.org}=${local.project}-${local.env}-igw"
+    Name = "${local.org}-${local.project}-${local.env}-igw"
     env  = var.env
   }
 
@@ -36,20 +36,37 @@ resource "aws_subnet" "public-subnet" {
 
   tags = {
     Name = "${local.org}-${local.project}-${local.env}-public-subnet-${count.index + 1}"
-    env  = var.env
-
+    Env  = var.env
   }
 
   depends_on = [aws_vpc.vpc]
-
 }
 
-resource "aws_route_table_association" "public_rta" {
+
+resource "aws_route_table" "public-rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
+  }
+
+  tags = {
+    Name = "${local.org}-${local.project}-${local.env}-public-route-table"
+    env  = var.env
+  }
+
+  depends_on = [aws_vpc.vpc]
+}
+
+resource "aws_route_table_association" "public-rta" {
   count          = 4
   route_table_id = aws_route_table.public-rt.id
   subnet_id      = aws_subnet.public-subnet[count.index].id
 
-  depends_on = [aws_vpc.vpc, aws_subnet.public-subnet]
+  depends_on = [aws_vpc.vpc,
+    aws_subnet.public-subnet
+  ]
 }
 
 resource "aws_security_group" "default-ec2-sg" {
@@ -62,8 +79,7 @@ resource "aws_security_group" "default-ec2-sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-
+    cidr_blocks = ["0.0.0.0/0"] // It should be specific IP range
   }
 
   egress {
@@ -74,7 +90,6 @@ resource "aws_security_group" "default-ec2-sg" {
   }
 
   tags = {
-    name = "${local.org}-${local.project}-${local.env}-sg"
-
+    Name = "${local.org}-${local.project}-${local.env}-sg"
   }
 }
