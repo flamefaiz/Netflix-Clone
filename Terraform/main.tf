@@ -9,7 +9,7 @@ locals {
 
 resource "aws_instance" "ec2" {
   count                  = var.ec2-instance-count
-  ami                    = data.aws_ami.ubuntu
+  ami                    = data.aws_ami.ubuntu.id
   subnet_id              = aws_subnet.public-subnet[count.index].id
   instance_type          = var.ec2_instance_type[count.index]
   iam_instance_profile   = aws_iam_instance_profile.iam_instance-profile.name
