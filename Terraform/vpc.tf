@@ -30,7 +30,7 @@ resource "aws_internet_gateway" "igw" {
 resource "aws_subnet" "public-subnet" {
   count                   = var.pub-subnet-count
   vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = element(var.pub-cidr-block.count.index)
+  cidr_block              = element(var.pub-cidr-block, count.index)
   availability_zone       = element(var.pub-availability-zone, count.index)
   map_public_ip_on_launch = true
 
@@ -70,7 +70,7 @@ resource "aws_security_group" "default-ec2-sg" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = "[0.0.0.0/0]"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
