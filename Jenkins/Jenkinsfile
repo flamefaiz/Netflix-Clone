@@ -5,6 +5,7 @@ pipeline{
     }
     environment {
         SCANNER_HOME=tool 'sonar-server'
+        NVD_API_KEY= credentials('nvd-api-key')
     }
     stages {
         stage('Workspace Cleaning'){
